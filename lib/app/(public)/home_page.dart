@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void editTodoDialog([TodoModel? model]) {
-    model ??= TodoModel(id: -1, title: '', check: false);
+    model ??= const TodoModel(id: -1, title: '', check: false);
     showDialog(
       context: context,
       builder: (context) {

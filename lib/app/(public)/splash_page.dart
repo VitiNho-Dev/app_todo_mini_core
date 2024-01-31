@@ -23,7 +23,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return const Material(
       child: Center(
-        child: Text('Spash'),
+        child: Text('Splash Page'),
       ),
     );
   }
