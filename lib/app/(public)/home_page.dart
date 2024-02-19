@@ -1,8 +1,11 @@
-import 'package:app_mini_core/app/interactor/actions/todo_action.dart';
-import 'package:app_mini_core/app/interactor/atoms/todo_atom.dart';
-import 'package:app_mini_core/app/interactor/models/todo_model.dart';
 import 'package:asp/asp.dart';
 import 'package:flutter/material.dart';
+
+import '../interactor/actions/theme_action.dart';
+import '../interactor/actions/todo_action.dart';
+import '../interactor/atoms/theme_atom.dart';
+import '../interactor/atoms/todo_atom.dart';
+import '../interactor/models/todo_model.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,42 +21,52 @@ class _HomePageState extends State<HomePage> {
     fetchTodos();
   }
 
-  void editTodoDialog([TodoModel? model]) {
+  Future<Object?> editTodoDialog([TodoModel? model]) async {
     model ??= const TodoModel(id: -1, title: '', check: false);
-    showDialog(
+    return showGeneralDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Edit todo'),
-          content: TextFormField(
-            initialValue: model?.title,
-            onChanged: (value) {
-              model = model!.copyWith(title: value);
-            },
+      transitionDuration: const Duration(milliseconds: 700),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(
+            parent: animation,
+            curve: Curves.easeInOutQuart,
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                deleteTodo(model!.id);
-                Navigator.pop(context);
+          child: AlertDialog(
+            title: const Text('Edit todo'),
+            content: TextFormField(
+              initialValue: model?.title,
+              onChanged: (value) {
+                model = model!.copyWith(title: value);
               },
-              child: const Text('Delete'),
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                putTodo(model!);
-                Navigator.pop(context);
-              },
-              child: const Text('Save'),
-            ),
-          ],
+            actions: [
+              TextButton(
+                onPressed: () {
+                  deleteTodo(model!.id);
+                  Navigator.pop(context);
+                },
+                child: const Text('Delete'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  putTodo(model!);
+                  Navigator.pop(context);
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          ),
         );
+      },
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return const SizedBox.shrink();
       },
     );
   }
@@ -66,6 +79,19 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Home page'),
+            actions: [
+              InkWell(
+                onTap: () {
+                  changeTheme();
+                },
+                child: themeAtom.value
+                    ? const Icon(Icons.dark_mode_outlined)
+                    : const Icon(Icons.light_mode_outlined),
+              ),
+              const SizedBox(
+                width: 15,
+              ),
+            ],
           ),
           body: ListView.builder(
             itemCount: todos.length,
